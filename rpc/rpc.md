@@ -58,3 +58,86 @@ type Author struct {
 > - 一次性，对长连接支持性差，多次请求响应需要重复建立连接
 >
 > **在 HTTP 2.0 中已经支持长连接**，gRPC就是使用的 HTTP 2.0 。
+
+# gRPC和Protocol Buffer
+
+## Protocol Buffer
+
+一个高压缩比，高性能，序列化和反序列化高效，轻量级数据存储协议。
+
+- 自动生成序列化和反序列化代码
+- 只需要维护proto文件
+- 向后兼容
+- 加密性好
+- 跨平台
+- 支持各种主流语言
+
+
+
+## gRPC
+
+### proto文件格式规范
+
+- Packege
+
+为生成Go代码，对每个`.proto`文件都需要添加Go package相关的内容。可以通过：
+
+1. 在`.proto`文件中声明（推荐）
+2. 在命令行中声明
+
+两种方式指明。
+
+`go_package`需要有完整的`import`路径，如：
+
+```protobuf
+option go_package = "example.com/project/protos/fizz";
+```
+
+示例：
+
+```protobuf
+syntax = "proto3";
+package helloworld;
+option go_package="rpc/helloword/proto;helloworldpb";
+
+message HelloRequest {
+  string name = 1;
+  int32 age = 2;
+  repeated string courses = 3;
+}
+
+message HelloResponse {
+  string reply = 1;
+}
+
+service Hello {
+  rpc Hello(HelloRequest) returns (HelloResponse);
+}
+```
+
+### 文件生成命令
+
+```shell
+protoc -I={proto文件所在的 相对于执行这条命令的 目录路径} --go_out={生成的 .pb.go 存放的目录路径} --go_opt=paths=source_relative --go-grpc_out={生成的 xxx_grpc.pb.go 存放的目录路径} --go-grpc_opt=paths=source_relative {具体的文件名 如 example.proto 该文件应该在 -I= 所指的目录中}
+```
+
+示例：
+
+```shell
+D:\Coding\WorkPlace\Golang\online-shop\rpc\helloworld\proto>protoc -I=. --go_out=. --go_opt=paths=source_relative --go-grpc_out=. --go-grpc_opt=paths=source_relative helloworld.proto
+```
+
+目录结构为：
+
+![image-20220512115147137](https://picgo-lzl.oss-cn-beijing.aliyuncs.com/image-20220512115147137.png)
+
+
+
+
+
+
+
+
+
+
+
