@@ -5,6 +5,7 @@ import (
 	"google.golang.org/grpc"
 	"net"
 	streampb "rpc/stream_grpc/proto"
+	"sync"
 	"time"
 )
 
@@ -44,7 +45,28 @@ func (s *server) HelloClientStream(streamServer streampb.Hello_HelloClientStream
 }
 
 func (s *server) HelloStream(streamServer streampb.Hello_HelloStreamServer) error {
-	panic("implement me")
+	// 为使接收和发送可以并发执行 这里使用 goroutine
+	wg := sync.WaitGroup{}
+	wg.Add(2)
+	go func() {
+		defer wg.Done()
+		// 负责 接收
+		for {
+			recv, _ := streamServer.Recv()
+			fmt.Println("收到客户端消息" + recv.Name)
+		}
+	}()
+
+	go func() {
+		defer wg.Done()
+		// 负责向客户端发送
+		for {
+			streamServer.Send(&streampb.HelloResponse{Reply: "server health"})
+			time.Sleep(time.Second)
+		}
+	}()
+	wg.Wait()
+	return nil
 }
 
 func main()  {
