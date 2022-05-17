@@ -4,7 +4,7 @@ import (
 	"context"
 	"google.golang.org/grpc"
 	"net"
-	helloworldpb "rpc/helloworld/proto"
+	helloworldpb "rpc/helloworld/proto-bak"
 )
 
 type Server struct {

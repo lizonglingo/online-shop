@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-option go_package="rpc/stream/proto;streampb";
+option go_package="rpc/stream/proto-bak;streampb";
 
 message HelloRequest {
   string name = 1;

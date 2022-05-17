@@ -268,5 +268,5 @@ var Hello_ServiceDesc = grpc.ServiceDesc{
 			ClientStreams: true,
 		},
 	},
-	Metadata: "stream.proto",
+	Metadata: "stream.proto-bak",
 }

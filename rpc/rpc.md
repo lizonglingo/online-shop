@@ -76,6 +76,10 @@ type Author struct {
 
 ## gRPC
 
+> 部分参考文档：
+>
+> https://www.lixueduan.com/post/protobuf/01-import/
+
 ### proto文件格式规范
 
 - Packege
@@ -90,15 +94,20 @@ type Author struct {
 `go_package`需要有完整的`import`路径，如：
 
 ```protobuf
-option go_package = "example.com/project/protos/fizz";
+option go_package="rpc/stream/proto-bak;streampb";
 ```
+
+这里需要注意`go_package`制定了两个信息：
+
+- 生成的文件的存放位置，以`;`之前的内容指定，是相对路径，如该目录下的`rpc/stream/proto`目录。
+- 以及生成的文件所属的包，以`;`之后的内容指定，如上，生成的代码所在的包为`streampb`。
 
 示例：
 
 ```protobuf
 syntax = "proto3";
 package helloworld;
-option go_package="rpc/helloword/proto;helloworldpb";
+option go_package="rpc/helloword/proto-bak;helloworldpb";
 
 message HelloRequest {
   string name = 1;
@@ -130,6 +139,8 @@ D:\Coding\WorkPlace\Golang\online-shop\rpc\helloworld\proto>protoc -I=. --go_out
 目录结构为：
 
 ![image-20220512115147137](https://picgo-lzl.oss-cn-beijing.aliyuncs.com/image-20220512115147137.png)
+
+### 不同的Proto文件相互调用
 
 
 

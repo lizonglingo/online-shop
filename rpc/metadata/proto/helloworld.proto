@@ -1,8 +1,6 @@
 syntax = "proto3";
-
-import "helloworld/proto/base.proto";
-
-option go_package=";helloworldpb";
+package helloworld;
+option go_package="rpc/metadata/proto/helloworld;helloworldpb";
 
 message HelloRequest {
   string name = 1;
@@ -14,8 +12,6 @@ message HelloResponse {
   string reply = 1;
 }
 
-
 service Hello {
   rpc Hello(HelloRequest) returns (HelloResponse);
-  rpc Ping(helloworld.Empty) returns (helloworld.Pong);
 }

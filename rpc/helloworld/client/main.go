@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 	"google.golang.org/grpc"
-	helloworldpb "rpc/helloworld/proto"
+	helloworldpb "rpc/helloworld/proto-bak"
 )
 
 func main() {

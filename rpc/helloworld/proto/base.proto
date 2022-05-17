@@ -1,0 +1,13 @@
+syntax = "proto3";
+package helloworld;
+option go_package="rpc/helloword/proto-bak;helloworldpb";
+
+message Empty {}
+
+message Pong {
+  string id=1;
+}
+
+service Hello {
+  rpc Ping(Empty) returns (Pong);
+}
