@@ -1,0 +1,17 @@
+syntax = "proto3";
+package authpb;
+option go_package="rpc/grpc_token_auth/proto/token;authpb";
+
+message HelloRequest {
+    string name = 1;
+    int32 age = 2;
+    repeated string courses = 3;
+}
+
+message HelloResponse {
+    string reply = 1;
+}
+
+service Hello {
+    rpc Hello(HelloRequest) returns (HelloResponse);
+}
