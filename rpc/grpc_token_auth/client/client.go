@@ -5,7 +5,9 @@ import (
 	"fmt"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/grpc/status"
 	authpb "rpc/grpc_token_auth/proto"
+	"time"
 )
 
 // 使用 grpc 内置拦截器
@@ -46,9 +48,19 @@ func main() {
 	})
 	ctx := metadata.NewOutgoingContext(context.Background(), md)
 
-	response, err := client.Hello(ctx, &authpb.HelloRequest{Name: "lzl"})
+	// gRPC超时设置
+	ctx_timeout, _ := context.WithTimeout(ctx, time.Second*3)
+
+
+	response, err := client.Hello(ctx_timeout, &authpb.HelloRequest{Name: "lzl"})
 	if err != nil {
-		panic(err)
+		// 取到错误信息处理错误
+		st, ok := status.FromError(err)
+		if !ok {
+			panic("cannot pares error")
+		}
+		fmt.Println(st.Message())
+		fmt.Println(st.Code())
 	}
 	fmt.Println(response.Reply)
 }

@@ -9,7 +9,7 @@ import (
 	"google.golang.org/grpc/status"
 	"net"
 	authpb "rpc/grpc_token_auth/proto"
-
+	"time"
 )
 
 
@@ -29,9 +29,15 @@ func (s *Server) Hello(ctx context.Context, request *authpb.HelloRequest) (*auth
 		}
 	}
 
+	// 模式超时
+	time.Sleep(time.Second * 2)
+
 	return &authpb.HelloResponse{
 		Reply: "hello " + request.Name,
 	}, nil
+	//return &authpb.HelloResponse{
+	//	Reply: "hello " + request.Name,
+	//}, status.Error(codes.NotFound, "test not found error")
 }
 
 
