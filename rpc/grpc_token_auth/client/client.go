@@ -6,6 +6,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
+	"os"
 	authpb "rpc/grpc_token_auth/proto"
 	"time"
 )
@@ -37,6 +38,7 @@ func main() {
 		panic(err)
 	}
 	defer conn.Close()
+
 
 	client := authpb.NewHelloClient(conn)
 
