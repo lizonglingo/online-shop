@@ -38,7 +38,7 @@ func main() {
 	}
 
 	// 定义表结构 直接生成对应的表 migration
-	// _ = db.AutoMigrate(&Product{})
+	_ = db.AutoMigrate(&Product{})
 
 	// 进行增删查改等操作
 	// Create
@@ -51,7 +51,7 @@ func main() {
 
 	// Update - 将 product 的 price 更新为 200
 	db.Model(&product).Update("Price", 200)
-	
+
 	// Update - 更新多个字段
 	// 仅更新非零值字段 例如下面的Code为空 也就是字符串类型的零值 所以不更新 Code 字段 只更新 Price 字段
 	// db.Model(&product).Updates(Product{Price: 200, Code: ""})
