@@ -1,0 +1,8 @@
+syntax = "proto3";
+package user;
+option go_package="return_json_protobuf/proto;userpb";
+
+message Teacher {
+    string name = 1;
+    repeated string course = 2;
+}
