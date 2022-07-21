@@ -6,6 +6,8 @@ import (
 	"github.com/go-playground/locales/zh"
 	ut "github.com/go-playground/universal-translator"
 	"net/http"
+	"reflect"
+	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -17,8 +19,8 @@ import (
 
 // Booking contains binded and validated data.
 type Booking struct {
-	CheckIn  time.Time `form:"check_in" binding:"required,bookabledate" time_format:"2006-01-02"`
-	CheckOut time.Time `form:"check_out" binding:"required,gtfield=CheckIn" time_format:"2006-01-02"`
+	CheckIn  time.Time `json:"check_in" form:"check_in" binding:"required,bookabledate" time_format:"2006-01-02"`
+	CheckOut time.Time `json:"check_out" form:"check_out" binding:"required,gtfield=CheckIn" time_format:"2006-01-02"`
 }
 
 type SignUpForm struct {
@@ -58,11 +60,28 @@ func main() {
 
 var translator ut.Translator
 
+func removeTopStruct(fileds map[string]string) map[string]string {
+	res := map[string]string{}
+	for field, err := range fileds {
+		res[field[strings.Index(field, ".")+1:]] = err
+	}
+	return res
+}
+
 func initTransValidator(lan string) error {
 	// 修改gin的validator引擎
 	// 断言其为 gin 的 validator 类型
 	if v, ok := binding.Validator.Engine().(*validator.Validate); ok {
+		// 将自定义的验证器注册进去
 		v.RegisterValidation("bookabledate", bookableDate)
+		// 注册一个获取 json 的 tag 的自定义方法
+		v.RegisterTagNameFunc(func(field reflect.StructField) string {
+			name := strings.SplitN(field.Tag.Get("json"), ",", 2)[0]
+			if name == "-" {	// json tag 中使用 ”-“ 表示忽视
+				return ""
+			}
+			return name
+		})
 		zhT := zh.New()
 		enT := en.New()
 		// 第一个参数是备用语言环境 后面的是应该支持的语言环境
@@ -91,8 +110,6 @@ func initTransValidator(lan string) error {
 	return nil
 }
 
-
-
 func sign(c *gin.Context) {
 	var sign SignUpForm
 	if err := c.ShouldBind(&sign); err != nil {
@@ -105,7 +122,7 @@ func sign(c *gin.Context) {
 		}
 
 		c.JSON(http.StatusBadRequest, gin.H{
-			"error": errs.Translate(translator),
+			"error": removeTopStruct(errs.Translate(translator)),
 		})
 		return
 	}
@@ -113,9 +130,16 @@ func sign(c *gin.Context) {
 
 func getBookable(c *gin.Context) {
 	var b Booking
+
 	if err := c.ShouldBindWith(&b, binding.Query); err == nil {
 		c.JSON(http.StatusOK, gin.H{"message": "Booking dates are valid!"})
 	} else {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		errs, ok := err.(validator.ValidationErrors)
+		if !ok {
+			c.JSON(http.StatusOK, gin.H{
+				"err": "internal error",
+			})
+		}
+		c.JSON(http.StatusBadRequest, gin.H{"error": removeTopStruct(errs.Translate(translator))})
 	}
 }
